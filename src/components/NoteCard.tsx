@@ -6,6 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { MarkdownPreview } from './MarkdownPreview'
+import { FileText, Clock } from 'lucide-react'
 
 interface NoteCardProps {
   note: Note
@@ -23,29 +25,59 @@ export function NoteCard({ note, onClick }: NoteCardProps) {
     })
   }
 
-  const getPreview = (content: string, maxLength: number = 100) => {
+  const getPreview = (content: string, maxLength: number = 150) => {
     if (content.length <= maxLength) return content
     return content.substring(0, maxLength) + '...'
   }
 
+  // Random gradient for each card based on note id
+  const gradients = [
+    'from-blue-500 to-indigo-500',
+    'from-purple-500 to-pink-500',
+    'from-green-500 to-teal-500',
+    'from-orange-500 to-red-500',
+    'from-cyan-500 to-blue-500',
+    'from-violet-500 to-purple-500',
+  ]
+
+  const gradientIndex = note.id.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0) % gradients.length
+  const gradient = gradients[gradientIndex]
+
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-lg hover:scale-[1.02]"
+      className="cursor-pointer transition-all hover:shadow-xl hover:scale-[1.03] border-0 overflow-hidden group"
       onClick={onClick}
     >
-      <CardHeader>
-        <CardTitle className="text-xl">{note.title}</CardTitle>
-        <CardDescription>
-          Created: {formatDate(note.createdAt)}
-        </CardDescription>
+      {/* Gradient Header Bar */}
+      <div className={`h-2 bg-gradient-to-r ${gradient}`} />
+
+      <CardHeader className="pb-3">
+        <div className="flex items-start gap-3">
+          <div className={`h-10 w-10 rounded-lg bg-gradient-to-br ${gradient} flex items-center justify-center flex-shrink-0`}>
+            <FileText className="h-5 w-5 text-white" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+              {note.title}
+            </CardTitle>
+            <CardDescription className="flex items-center gap-1 mt-1">
+              <Clock className="h-3 w-3" />
+              {formatDate(note.createdAt)}
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
+
       {note.content && (
-        <CardContent>
-          <p className="text-sm text-gray-600 whitespace-pre-wrap">
-            {getPreview(note.content)}
-          </p>
+        <CardContent className="pt-0">
+          <div className="line-clamp-3 text-sm text-gray-600">
+            <MarkdownPreview content={getPreview(note.content)} />
+          </div>
         </CardContent>
       )}
+
+      {/* Hover Effect Border */}
+      <div className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${gradient} transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left`} />
     </Card>
   )
 }
