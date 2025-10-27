@@ -6,9 +6,12 @@ export interface Note {
   updatedAt: Date;
   isPinned?: boolean;
   isFavorite?: boolean;
+  archivedAt?: Date | null;
+  folder?: string;
 }
 
 export type SortOption = 'newest' | 'oldest' | 'updated' | 'title-asc' | 'title-desc'
 export type ViewMode = 'grid' | 'list'
 export type FilterOption = 'all' | 'today' | 'week' | 'month' | 'with-content' | 'empty'
 export type SearchScope = 'all' | 'title' | 'content'
+export type TimeFilter = 'all' | 'today' | 'week' | 'month'
