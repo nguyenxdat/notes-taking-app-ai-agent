@@ -11,3 +11,4 @@ export interface Note {
 export type SortOption = 'newest' | 'oldest' | 'updated' | 'title-asc' | 'title-desc'
 export type ViewMode = 'grid' | 'list'
 export type FilterOption = 'all' | 'today' | 'week' | 'month' | 'with-content' | 'empty'
+export type SearchScope = 'all' | 'title' | 'content'

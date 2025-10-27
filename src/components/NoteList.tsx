@@ -8,6 +8,7 @@ interface NoteListProps {
   selectedNotes?: Set<string>
   onToggleSelect?: (id: string) => void
   selectionMode?: boolean
+  searchQuery?: string
 }
 
 export function NoteList({
@@ -15,7 +16,8 @@ export function NoteList({
   onNoteClick,
   selectedNotes = new Set(),
   onToggleSelect,
-  selectionMode = false
+  selectionMode = false,
+  searchQuery = ''
 }: NoteListProps) {
   if (notes.length === 0) {
     return (
@@ -39,6 +41,7 @@ export function NoteList({
           isSelected={selectedNotes.has(note.id)}
           onToggleSelect={onToggleSelect}
           selectionMode={selectionMode}
+          searchQuery={searchQuery}
         />
       ))}
     </div>

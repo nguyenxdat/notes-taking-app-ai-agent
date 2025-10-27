@@ -1,8 +1,9 @@
-import { useState, useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
-import type { Note, SortOption, ViewMode, FilterOption } from '@/types/note'
-import { Button } from '@/components/ui/button'
-import { Dialog, DialogTrigger } from '@/components/ui/dialog'
+import { ListView } from '@/components/ListView'
+import { NoteForm } from '@/components/NoteForm'
+import { NoteList } from '@/components/NoteList'
+import { NoteManagementBar } from '@/components/NoteManagementBar'
+import { NoteStatsBar } from '@/components/NoteStats'
+import { SearchBar } from '@/components/SearchBar'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -13,26 +14,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { NoteForm } from '@/components/NoteForm'
-import { NoteList } from '@/components/NoteList'
-import { ListView } from '@/components/ListView'
-import { NoteStatsBar } from '@/components/NoteStats'
-import { NoteManagementBar } from '@/components/NoteManagementBar'
+import { Button } from '@/components/ui/button'
+import { Dialog, DialogTrigger } from '@/components/ui/dialog'
 import {
-  sortNotes,
-  filterNotes,
-  sortWithPriority,
   calculateStats,
-  exportNotesToJSON,
   downloadJSON,
+  exportNotesToJSON,
+  filterNotes,
+  searchNotes,
+  sortNotes,
+  sortWithPriority,
   validateImportedNotes,
 } from '@/lib/noteManagement'
-import { Plus, BookOpen, AlertTriangle, CheckSquare, Square } from 'lucide-react'
+import type { FilterOption, Note, SearchScope, SortOption, ViewMode } from '@/types/note'
+import { AlertTriangle, BookOpen, CheckSquare, Plus, Square } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 interface NotesPageProps {
   notes: Note[]
   onCreateNote: (title: string, content: string) => void
-  onUpdateNote: (id: string, updates: Partial<Note>) => void
   onDeleteNotes: (ids: string[]) => void
   onImportNotes: (notes: Note[]) => void
 }
@@ -40,7 +41,6 @@ interface NotesPageProps {
 export function NotesPage({
   notes,
   onCreateNote,
-  onUpdateNote,
   onDeleteNotes,
   onImportNotes,
 }: NotesPageProps) {
@@ -55,17 +55,22 @@ export function NotesPage({
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [filterBy, setFilterBy] = useState<FilterOption>('all')
 
+  // Search states
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchScope, setSearchScope] = useState<SearchScope>('all')
+
   // Selection states
   const [selectedNotes, setSelectedNotes] = useState<Set<string>>(new Set())
   const [selectionMode, setSelectionMode] = useState(false)
 
-  // Process notes: filter → sort → prioritize
+  // Process notes: search → filter → sort → prioritize
   const processedNotes = useMemo(() => {
-    let result = filterNotes(notes, filterBy)
+    let result = searchNotes(notes, searchQuery, searchScope)
+    result = filterNotes(result, filterBy)
     result = sortNotes(result, sortBy)
     result = sortWithPriority(result)
     return result
-  }, [notes, filterBy, sortBy])
+  }, [notes, searchQuery, searchScope, filterBy, sortBy])
 
   // Calculate statistics
   const stats = useMemo(() => calculateStats(notes), [notes])
@@ -142,16 +147,16 @@ export function NotesPage({
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="h-14 w-14 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
+            <div className="h-14 w-14 rounded-xl bg-linear-to-br from-blue-600 to-indigo-600 flex items-center justify-center shadow-lg">
               <BookOpen className="h-8 w-8 text-white" />
             </div>
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <h1 className="text-4xl font-bold bg-linear-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 My Notes
               </h1>
               <p className="text-gray-600 mt-1">
@@ -177,7 +182,7 @@ export function NotesPage({
             {/* New Note Button */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger>
-                <Button size="lg" className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all">
+                <Button size="lg" className="gap-2 bg-linear-to-br from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all">
                   <Plus className="h-5 w-5" />
                   New Note
                 </Button>
@@ -192,6 +197,17 @@ export function NotesPage({
 
         {/* Statistics */}
         <NoteStatsBar stats={stats} />
+
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SearchBar
+            query={searchQuery}
+            scope={searchScope}
+            onQueryChange={setSearchQuery}
+            onScopeChange={setSearchScope}
+            resultCount={processedNotes.length}
+          />
+        </div>
 
         {/* Management Bar */}
         <NoteManagementBar
@@ -232,6 +248,7 @@ export function NotesPage({
             selectedNotes={selectedNotes}
             onToggleSelect={handleToggleSelect}
             selectionMode={selectionMode}
+            searchQuery={searchQuery}
           />
         ) : (
           <ListView
@@ -240,6 +257,7 @@ export function NotesPage({
             selectedNotes={selectedNotes}
             onToggleSelect={handleToggleSelect}
             selectionMode={selectionMode}
+            searchQuery={searchQuery}
           />
         )}
 

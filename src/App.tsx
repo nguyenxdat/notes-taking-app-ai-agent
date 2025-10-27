@@ -61,7 +61,6 @@ function App() {
             <NotesPage
               notes={notes}
               onCreateNote={handleCreateNote}
-              onUpdateNote={handleUpdateNoteProperties}
               onDeleteNotes={handleDeleteNotes}
               onImportNotes={handleImportNotes}
             />

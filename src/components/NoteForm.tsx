@@ -1,7 +1,4 @@
-import { useState, type FormEvent } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import {
   DialogContent,
   DialogDescription,
@@ -9,7 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Sparkles, FileText, Save, X } from 'lucide-react'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { FileText, Save, Sparkles, X } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
 
 interface NoteFormProps {
   onSubmit: (title: string, content: string) => void
@@ -40,11 +40,11 @@ export function NoteForm({ onSubmit, onCancel }: NoteFormProps) {
       <form onSubmit={handleSubmit}>
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
-            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
+            <div className="h-12 w-12 rounded-xl bg-linear-to-br from-blue-500 to-indigo-500 flex items-center justify-center shadow-lg">
               <Sparkles className="h-6 w-6 text-white" />
             </div>
             <div>
-              <DialogTitle className="text-2xl bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <DialogTitle className="text-2xl bg-linear-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 Create New Note
               </DialogTitle>
               <DialogDescription className="text-gray-500">
@@ -122,7 +122,7 @@ Write your note here with **Markdown** support...
           </Button>
           <Button
             type="submit"
-            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all"
+            className="bg-linear-to-br from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-lg hover:shadow-xl transition-all"
           >
             <Save className="h-4 w-4 mr-2" />
             Save Note

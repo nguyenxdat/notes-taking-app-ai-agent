@@ -1,4 +1,4 @@
-import type { Note, SortOption, FilterOption } from '@/types/note'
+import type { Note, SortOption, FilterOption, SearchScope } from '@/types/note'
 
 // Sorting functions
 export function sortNotes(notes: Note[], sortBy: SortOption): Note[] {
@@ -52,6 +52,43 @@ export function filterNotes(notes: Note[], filter: FilterOption): Note[] {
     default:
       return notes
   }
+}
+
+// Search functions
+export function searchNotes(notes: Note[], query: string, scope: SearchScope = 'all'): Note[] {
+  if (!query || query.trim().length === 0) {
+    return notes
+  }
+
+  const searchTerm = query.toLowerCase().trim()
+
+  return notes.filter(note => {
+    switch (scope) {
+      case 'title':
+        return note.title.toLowerCase().includes(searchTerm)
+
+      case 'content':
+        return note.content.toLowerCase().includes(searchTerm)
+
+      case 'all':
+      default:
+        return (
+          note.title.toLowerCase().includes(searchTerm) ||
+          note.content.toLowerCase().includes(searchTerm)
+        )
+    }
+  })
+}
+
+// Highlight matched text helper
+export function highlightText(text: string, query: string): string {
+  if (!query || query.trim().length === 0) {
+    return text
+  }
+
+  const searchTerm = query.trim()
+  const regex = new RegExp(`(${searchTerm})`, 'gi')
+  return text.replace(regex, '<mark class="bg-yellow-200 text-yellow-900 px-0.5 rounded">$1</mark>')
 }
 
 // Pin/Favorite sorting (pinned first, then favorites, then regular)

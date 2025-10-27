@@ -1,5 +1,5 @@
 import type { Note } from '@/types/note'
-import { FileText, Clock, Pin, Star, Check } from 'lucide-react'
+import { Check, Clock, FileText, Pin, Star } from 'lucide-react'
 import { MarkdownPreview } from './MarkdownPreview'
 
 interface ListViewProps {
@@ -8,6 +8,7 @@ interface ListViewProps {
   selectedNotes: Set<string>
   onToggleSelect: (id: string) => void
   selectionMode: boolean
+  searchQuery?: string
 }
 
 export function ListView({
@@ -16,6 +17,7 @@ export function ListView({
   selectedNotes,
   onToggleSelect,
   selectionMode,
+  searchQuery = '',
 }: ListViewProps) {
   if (notes.length === 0) {
     return (
@@ -45,6 +47,16 @@ export function ListView({
     return content.substring(0, maxLength) + '...'
   }
 
+  const highlightText = (text: string) => {
+    if (!searchQuery || searchQuery.trim().length === 0) {
+      return text
+    }
+
+    const searchTerm = searchQuery.trim()
+    const regex = new RegExp(`(${searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
+    return text.replace(regex, '<mark class="bg-yellow-200 text-yellow-900 px-0.5 rounded">$1</mark>')
+  }
+
   return (
     <div className="space-y-3">
       {notes.map((note) => {
@@ -67,7 +79,7 @@ export function ListView({
                 {/* Checkbox */}
                 {selectionMode && (
                   <div
-                    className="flex-shrink-0 mt-1"
+                    className="shrink-0 mt-1"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
@@ -84,8 +96,8 @@ export function ListView({
                 )}
 
                 {/* Icon */}
-                <div className="flex-shrink-0">
-                  <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
+                <div className="shrink-0">
+                  <div className="h-12 w-12 rounded-lg bg-linear-to-br from-blue-500 to-indigo-500 flex items-center justify-center">
                     <FileText className="h-6 w-6 text-white" />
                   </div>
                 </div>
@@ -96,13 +108,17 @@ export function ListView({
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         {note.isPinned && (
-                          <Pin className="h-4 w-4 text-orange-600 flex-shrink-0" />
+                          <Pin className="h-4 w-4 text-orange-600 shrink-0" />
                         )}
                         {note.isFavorite && (
-                          <Star className="h-4 w-4 text-yellow-600 flex-shrink-0 fill-current" />
+                          <Star className="h-4 w-4 text-yellow-600 shrink-0 fill-current" />
                         )}
                         <h3 className="text-lg font-bold text-gray-900 truncate">
-                          {note.title}
+                          {searchQuery ? (
+                            <span dangerouslySetInnerHTML={{ __html: highlightText(note.title) }} />
+                          ) : (
+                            note.title
+                          )}
                         </h3>
                       </div>
                       <div className="flex items-center gap-2 text-xs text-gray-500">

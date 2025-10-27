@@ -1,11 +1,11 @@
-import { useState, type FormEvent } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import type { Note } from '@/types/note'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { MarkdownPreview } from './MarkdownPreview'
+import type { Note } from '@/types/note'
 import { ArrowLeft, Save } from 'lucide-react'
+import { useState, type FormEvent } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { MarkdownPreview } from './MarkdownPreview'
 
 interface NoteEditorProps {
   notes: Note[]
@@ -24,7 +24,7 @@ export function NoteEditor({ notes, onUpdate }: NoteEditorProps) {
 
   if (!note) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Note not found</h2>
           <Button onClick={() => navigate('/')} className="bg-blue-600 hover:bg-blue-700">
@@ -53,12 +53,12 @@ export function NoteEditor({ notes, onUpdate }: NoteEditorProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <form onSubmit={handleSubmit}>
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+            <h1 className="text-3xl font-bold bg-linear-to-br from-blue-600 to-indigo-600 bg-clip-text text-transparent">
               ✏️ Edit Note
             </h1>
             <div className="flex gap-2">
