@@ -23,8 +23,33 @@ function App() {
     ))
   }
 
+  const handleUpdateNoteProperties = (id: string, updates: Partial<Note>) => {
+    setNotes(notes.map(note =>
+      note.id === id
+        ? updateNote(note, updates)
+        : note
+    ))
+  }
+
   const handleDeleteNote = (id: string) => {
     setNotes(notes.filter(note => note.id !== id))
+  }
+
+  const handleDeleteNotes = (ids: string[]) => {
+    setNotes(notes.filter(note => !ids.includes(note.id)))
+  }
+
+  const handleImportNotes = (importedNotes: Note[]) => {
+    // Create a map of existing notes by ID for faster lookup
+    const existingNotesMap = new Map(notes.map(note => [note.id, note]))
+
+    // Replace existing notes with imported ones if IDs match
+    importedNotes.forEach(importedNote => {
+      existingNotesMap.set(importedNote.id, importedNote)
+    })
+
+    // Convert back to array
+    setNotes(Array.from(existingNotesMap.values()))
   }
 
   return (
@@ -36,6 +61,9 @@ function App() {
             <NotesPage
               notes={notes}
               onCreateNote={handleCreateNote}
+              onUpdateNote={handleUpdateNoteProperties}
+              onDeleteNotes={handleDeleteNotes}
+              onImportNotes={handleImportNotes}
             />
           }
         />
@@ -45,6 +73,7 @@ function App() {
             <NoteDetail
               notes={notes}
               onDelete={handleDeleteNote}
+              onUpdate={handleUpdateNoteProperties}
             />
           }
         />

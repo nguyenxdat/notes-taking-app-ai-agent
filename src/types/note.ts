@@ -4,4 +4,10 @@ export interface Note {
   content: string;
   createdAt: Date;
   updatedAt: Date;
+  isPinned?: boolean;
+  isFavorite?: boolean;
 }
+
+export type SortOption = 'newest' | 'oldest' | 'updated' | 'title-asc' | 'title-desc'
+export type ViewMode = 'grid' | 'list'
+export type FilterOption = 'all' | 'today' | 'week' | 'month' | 'with-content' | 'empty'

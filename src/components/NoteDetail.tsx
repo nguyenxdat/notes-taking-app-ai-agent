@@ -14,14 +14,15 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { MarkdownPreview } from './MarkdownPreview'
-import { ArrowLeft, Edit, Trash2, AlertTriangle } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2, AlertTriangle, Pin, Star } from 'lucide-react'
 
 interface NoteDetailProps {
   notes: Note[]
   onDelete: (id: string) => void
+  onUpdate?: (id: string, updates: Partial<Note>) => void
 }
 
-export function NoteDetail({ notes, onDelete }: NoteDetailProps) {
+export function NoteDetail({ notes, onDelete, onUpdate }: NoteDetailProps) {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
@@ -57,6 +58,14 @@ export function NoteDetail({ notes, onDelete }: NoteDetailProps) {
     navigate('/')
   }
 
+  const handleTogglePin = () => {
+    onUpdate?.(note.id, { isPinned: !note.isPinned })
+  }
+
+  const handleToggleFavorite = () => {
+    onUpdate?.(note.id, { isFavorite: !note.isFavorite })
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
@@ -71,6 +80,24 @@ export function NoteDetail({ notes, onDelete }: NoteDetailProps) {
             Back
           </Button>
           <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={handleTogglePin}
+              className={note.isPinned ? 'bg-orange-50 border-orange-300 hover:bg-orange-100' : ''}
+            >
+              <Pin className={`h-4 w-4 mr-2 ${note.isPinned ? 'text-orange-600' : ''}`} />
+              {note.isPinned ? 'Unpin' : 'Pin'}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={handleToggleFavorite}
+              className={note.isFavorite ? 'bg-yellow-50 border-yellow-300 hover:bg-yellow-100' : ''}
+            >
+              <Star className={`h-4 w-4 mr-2 ${note.isFavorite ? 'text-yellow-600 fill-current' : ''}`} />
+              {note.isFavorite ? 'Unfavorite' : 'Favorite'}
+            </Button>
+
             <Button
               onClick={() => navigate(`/note/${note.id}/edit`)}
               className="bg-blue-600 hover:bg-blue-700 text-white"

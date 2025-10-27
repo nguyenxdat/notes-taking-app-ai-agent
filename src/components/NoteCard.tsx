@@ -7,14 +7,17 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { MarkdownPreview } from './MarkdownPreview'
-import { FileText, Clock } from 'lucide-react'
+import { FileText, Clock, Pin, Star, Check } from 'lucide-react'
 
 interface NoteCardProps {
   note: Note
   onClick?: () => void
+  isSelected?: boolean
+  onToggleSelect?: (id: string) => void
+  selectionMode?: boolean
 }
 
-export function NoteCard({ note, onClick }: NoteCardProps) {
+export function NoteCard({ note, onClick, isSelected = false, onToggleSelect, selectionMode = false }: NoteCardProps) {
   const formatDate = (date: Date) => {
     return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -45,9 +48,32 @@ export function NoteCard({ note, onClick }: NoteCardProps) {
 
   return (
     <Card
-      className="cursor-pointer transition-all hover:shadow-xl hover:scale-[1.03] border-0 overflow-hidden group"
-      onClick={onClick}
+      className={`cursor-pointer transition-all hover:shadow-xl hover:scale-[1.03] overflow-hidden group relative ${
+        isSelected ? 'border-2 border-blue-500 shadow-lg' : 'border-0'
+      }`}
+      onClick={() => !selectionMode && onClick?.()}
     >
+      {/* Selection Checkbox */}
+      {selectionMode && (
+        <div
+          className="absolute top-3 right-3 z-10"
+          onClick={(e) => {
+            e.stopPropagation()
+            onToggleSelect?.(note.id)
+          }}
+        >
+          <button
+            className={`h-6 w-6 rounded border-2 flex items-center justify-center transition-all ${
+              isSelected
+                ? 'bg-blue-600 border-blue-600'
+                : 'bg-white border-gray-300 hover:border-blue-400'
+            }`}
+          >
+            {isSelected && <Check className="h-4 w-4 text-white" />}
+          </button>
+        </div>
+      )}
+
       {/* Gradient Header Bar */}
       <div className={`h-2 bg-gradient-to-r ${gradient}`} />
 
@@ -57,6 +83,14 @@ export function NoteCard({ note, onClick }: NoteCardProps) {
             <FileText className="h-5 w-5 text-white" />
           </div>
           <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              {note.isPinned && (
+                <Pin className="h-4 w-4 text-orange-600 flex-shrink-0" />
+              )}
+              {note.isFavorite && (
+                <Star className="h-4 w-4 text-yellow-600 flex-shrink-0 fill-current" />
+              )}
+            </div>
             <CardTitle className="text-xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
               {note.title}
             </CardTitle>
