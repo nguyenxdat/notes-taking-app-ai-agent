@@ -73,8 +73,11 @@ export function ArchivesPage({
               >
                 <div className="flex items-start gap-4">
                   {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 text-lg mb-2">
+                  <div
+                    className="flex-1 min-w-0 cursor-pointer"
+                    onClick={() => navigate(`/note/${note.id}`)}
+                  >
+                    <h3 className="font-bold text-gray-900 text-lg mb-2 hover:text-blue-600 transition-colors">
                       {note.title}
                     </h3>
                     <div className="flex items-center gap-4 text-sm text-gray-500">
@@ -95,11 +98,14 @@ export function ArchivesPage({
                   </div>
 
                   {/* Actions */}
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onRestore(note.id)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        onRestore(note.id)
+                      }}
                       className="gap-2"
                     >
                       <RotateCcw className="h-4 w-4" />
@@ -108,7 +114,8 @@ export function ArchivesPage({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation()
                         if (
                           confirm(
                             'Are you sure you want to permanently delete this note? This action cannot be undone.'

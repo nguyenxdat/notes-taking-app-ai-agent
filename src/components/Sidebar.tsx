@@ -9,9 +9,9 @@ import {
   ChevronDown,
   HelpCircle,
   Settings,
-  Moon
+  Moon,
+  FileText
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
 
 interface SidebarProps {
   onCreateNote?: () => void
@@ -37,6 +37,13 @@ export function Sidebar({ onCreateNote, onSearch }: SidebarProps) {
       shortcut: '⌘S',
       onClick: onSearch,
       path: null
+    },
+    {
+      icon: FileText,
+      label: 'All Notes',
+      shortcut: null,
+      onClick: () => navigate('/'),
+      path: '/'
     },
     {
       icon: Archive,

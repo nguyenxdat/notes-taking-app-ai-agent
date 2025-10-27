@@ -66,79 +66,86 @@ export function NoteDetail({ notes, onDelete, onUpdate }: NoteDetailProps) {
     onUpdate?.(note.id, { isFavorite: !note.isFavorite })
   }
 
+  const isArchived = !!note.archivedAt
+
   return (
-    <div className="min-h-screen bg-linear-to-br from-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <Button
             variant="ghost"
-            onClick={() => navigate('/')}
+            onClick={() => navigate(isArchived ? '/archives' : '/')}
             className="hover:bg-blue-100"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back
           </Button>
           <div className="flex gap-2">
-            <Button
-              variant="outline"
-              onClick={handleTogglePin}
-              className={note.isPinned ? 'bg-orange-50 border-orange-300 hover:bg-orange-100' : ''}
-            >
-              <Pin className={`h-4 w-4 mr-2 ${note.isPinned ? 'text-orange-600' : ''}`} />
-              {note.isPinned ? 'Unpin' : 'Pin'}
-            </Button>
-
-            <Button
-              variant="outline"
-              onClick={handleToggleFavorite}
-              className={note.isFavorite ? 'bg-yellow-50 border-yellow-300 hover:bg-yellow-100' : ''}
-            >
-              <Star className={`h-4 w-4 mr-2 ${note.isFavorite ? 'text-yellow-600 fill-current' : ''}`} />
-              {note.isFavorite ? 'Unfavorite' : 'Favorite'}
-            </Button>
-
-            <Button
-              onClick={() => navigate(`/note/${note.id}/edit`)}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-            >
-              <Edit className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
-
-            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-              <AlertDialogTrigger>
-                <Button className="bg-red-600 hover:bg-red-700 text-white">
-                  <Trash2 className="h-4 w-4 mr-2" />
-                  Delete
+            {/* Only show action buttons if not archived */}
+            {!isArchived && (
+              <>
+                <Button
+                  variant="outline"
+                  onClick={handleTogglePin}
+                  className={note.isPinned ? 'bg-orange-50 border-orange-300 hover:bg-orange-100' : ''}
+                >
+                  <Pin className={`h-4 w-4 mr-2 ${note.isPinned ? 'text-orange-600' : ''}`} />
+                  {note.isPinned ? 'Unpin' : 'Pin'}
                 </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
-                      <AlertTriangle className="h-6 w-6 text-red-600" />
-                    </div>
-                    <AlertDialogTitle className="text-xl">Delete Note?</AlertDialogTitle>
-                  </div>
-                  <AlertDialogDescription>
-                    Are you sure you want to delete <strong>"{note.title}"</strong>?
-                    This action cannot be undone and the note will be permanently deleted.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md">
-                    Cancel
-                  </AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={handleDelete}
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
-                  >
-                    Delete
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+
+                <Button
+                  variant="outline"
+                  onClick={handleToggleFavorite}
+                  className={note.isFavorite ? 'bg-yellow-50 border-yellow-300 hover:bg-yellow-100' : ''}
+                >
+                  <Star className={`h-4 w-4 mr-2 ${note.isFavorite ? 'text-yellow-600 fill-current' : ''}`} />
+                  {note.isFavorite ? 'Unfavorite' : 'Favorite'}
+                </Button>
+
+                <Button
+                  onClick={() => navigate(`/note/${note.id}/edit`)}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Edit className="h-4 w-4 mr-2" />
+                  Edit
+                </Button>
+
+                <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                  <AlertDialogTrigger>
+                    <Button className="bg-red-600 hover:bg-red-700 text-white">
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Delete
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
+                          <AlertTriangle className="h-6 w-6 text-red-600" />
+                        </div>
+                        <AlertDialogTitle className="text-xl">Delete Note?</AlertDialogTitle>
+                      </div>
+                      <AlertDialogDescription>
+                        Are you sure you want to delete <strong>"{note.title}"</strong>?
+                        This action cannot be undone and the note will be permanently deleted.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-md">
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleDelete}
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md"
+                      >
+                        Delete
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
           </div>
         </div>
 

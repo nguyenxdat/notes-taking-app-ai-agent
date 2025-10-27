@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import type { Note } from '@/types/note'
 import { useLocalStorage } from '@/hooks/useLocalStorage'
@@ -10,6 +10,7 @@ import { NoteDetail } from '@/components/NoteDetail'
 import { NoteEditor } from '@/components/NoteEditor'
 import { Dialog } from '@/components/ui/dialog'
 import { NoteForm } from '@/components/NoteForm'
+import { CommandPalette } from '@/components/CommandPalette'
 import './App.css'
 
 function App() {
@@ -73,6 +74,25 @@ function App() {
     setIsCreateDialogOpen(false)
   }
 
+  // Global keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // ⌘K or Ctrl+K to open command palette
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setIsSearchOpen(true)
+      }
+      // ⌘N or Ctrl+N to create new note
+      if ((e.metaKey || e.ctrlKey) && e.key === 'n') {
+        e.preventDefault()
+        setIsCreateDialogOpen(true)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [])
+
   return (
     <BrowserRouter>
       <Layout
@@ -128,6 +148,17 @@ function App() {
             onCancel={() => setIsCreateDialogOpen(false)}
           />
         </Dialog>
+
+        {/* Command Palette */}
+        <CommandPalette
+          isOpen={isSearchOpen}
+          onClose={() => setIsSearchOpen(false)}
+          notes={notes}
+          onCreateNote={() => {
+            setIsSearchOpen(false)
+            setIsCreateDialogOpen(true)
+          }}
+        />
       </Layout>
     </BrowserRouter>
   )
